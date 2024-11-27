@@ -1,38 +1,48 @@
-from flask import jsonify
 from models.dbcategories import CategoryModel
+from library.functions import functions
 
 class CategoryController:
-    def create_category(data):
+    def create_category(self, data):
+        CategoryModelObj = CategoryModel()
+        functionsObj = functions()
         name, description = data.get('name'), data.get('description')
         if not name:
-            return jsonify({'status_code':0, 'status_message':'Missing name field'}),400
+            return functionsObj.send_response(0, 'Missing name field')
         
-        category = CategoryModel.create_category(name, description)
-        return jsonify({'status_code':1, 'status_message':'Category created successfully','data':category})
+        category = CategoryModelObj.create_category(name, description)
+        return functionsObj.send_response(1, 'Category created successfully',category)
     
-    def get_category(category_id):
-        category = CategoryModel.get_category_by_id(category_id)
+    def get_category(self, category_id):
+        CategoryModelObj = CategoryModel()
+        functionsObj = functions()
+        category = CategoryModelObj.get_category_by_id(category_id)
         if not category:
-            return jsonify({'status_code':0,'status_message':'Category not found'}),404
+            return functionsObj.send_response(0,'Category not found')
         
-        return jsonify({'status_code':1, 'status_message':'Category retrieved successfully','data':category})
+        return functionsObj.send_response(1, 'Category retrieved successfully',category)
     
-    def get_all_categories():
-        categories = CategoryModel.get_all_categories()
-        return jsonify({'status_code':1, 'status_message':'Categories retrieved successfully','data':categories})
+    def get_all_categories(self):
+        CategoryModelObj = CategoryModel()
+        functionsObj = functions()
+        categories = CategoryModelObj.get_all_categories()
+        return functionsObj.send_response(1, 'Categories retrieved successfully',categories)
     
-    def update_category(category_id, data):
+    def update_category(self, category_id, data):
+        CategoryModelObj = CategoryModel()
+        functionsObj = functions()
         if not data:
-            return jsonify({'status_code':0,'status_message':'No data found for updation'}),400
+            return functionsObj.send_response(0,'No data found for updation')
         
-        res = CategoryModel.update_category(category_id, **data)
+        res = CategoryModelObj.update_category(category_id, **data)
         if res:
-            return jsonify({'status_code':1, 'status_message':'Category updated successfully'}),200
-        return jsonify({'status_code':0,'status_message':'Category not found'}),404
+            return functionsObj.send_response(1, 'Category updated successfully')
+        return functionsObj.send_response(0,'Category not found')
     
-    def delete_category(category_id):
-        res = CategoryModel.delete_category(category_id)
+    def delete_category(self, category_id):
+        CategoryModelObj = CategoryModel()
+        functionsObj = functions()
+        res = CategoryModelObj.delete_category(category_id)
         if res:
-            return jsonify({'status_code':1,'status_message':'Category deleted successfully'}),200
-        return jsonify({'status_code':0,'status_message':'Category not found'}),404
+            return functionsObj.send_response(1,'Category deleted successfully')
+        return functionsObj.send_response(0,'Category not found')
         

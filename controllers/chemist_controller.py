@@ -1,17 +1,24 @@
-from flask import jsonify
 from models.dbchemists import ChemistModel
+from library.functions import functions
+from werkzeug.security import generate_password_hash
 
 class ChemistController:
-    def create_chemist(data):
-        name, email, phone = data.get('name'), data.get('email'), data.get('phone')
-        if not all([name, email, phone]):
-            return jsonify({'status_code':0, 'status_message':'Missing required parameters'}), 400
+    def create_chemist(self, data):
+        ChemistModelObj = ChemistModel()
+        functionsObj = functions()
+        name, email, phone, password = data.get('name'), data.get('email'), data.get('phone'), data.get('password')
+        if not all([name, email, phone, password]):
+            return functionsObj.send_response(0, 'Missing required parameters')
         
-        chemist = ChemistModel.create_chemist(name, email, phone)
-        return jsonify({'status_code':1, 'status_message':'Chemist created successfully', 'data': chemist})
+        hashed_password = generate_password_hash(password)
+        
+        chemist = ChemistModelObj.create_chemist(name, email, phone, hashed_password)
+        return functionsObj.send_response(1, 'Chemist created successfully', chemist)
     
-    def authenticate_chemist(data):
-        chemist_id, access_token = data.get('chemist_id'), data.get('access_token')
-        if not ChemistModel.authenticate_chemist(chemist_id, access_token):
-            return jsonify({'status_code':0, 'status_message':'Invalid credentials'}), 401
-        return jsonify({'status_code':1, 'status_message':'Authenticated successfully'})
+    def get_chemist_by_email(self, email):
+        ChemistModelObj = ChemistModel()
+        functionsObj = functions()
+        chemist = ChemistModelObj.get_chemist_by_email(email)
+        if chemist:
+            return functionsObj.send_response(1, 'Chemist retrieved successfully', chemist)
+        return functionsObj.send_response(0,'Chemist not found')

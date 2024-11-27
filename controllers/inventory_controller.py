@@ -2,7 +2,7 @@ from models.inventory import InventoryModel
 from library.functions import functions
 
 class InventoryController:
-    def add_inventory(data):
+    def add_inventory(self, data):
         InventoryModelObj = InventoryModel()
         functionsObj = functions()
         product_id, quantity, batch_number, expiry_date = (
@@ -18,13 +18,13 @@ class InventoryController:
         inventory = InventoryModelObj.add_inventory(product_id, quantity, batch_number, expiry_date)
         return functionsObj.send_response(1, 'Inventory added successfully',inventory)
     
-    def get_inventory_by_product(product_id):
+    def get_inventory_by_product(self, product_id):
         InventoryModelObj = InventoryModel()
         functionsObj = functions()
         inventory = InventoryModelObj.get_inventory_by_product(product_id)
         return functionsObj.send_response(1,'Inventory retrieved successfully',inventory)
     
-    def update_inventory(inventory_id, data):
+    def update_inventory(self, inventory_id, data):
         InventoryModelObj = InventoryModel()
         functionsObj = functions()
         if not data:
@@ -35,7 +35,7 @@ class InventoryController:
             return functionsObj.send_response(1,'Inventory updated successfully')
         return functionsObj.send_response(0, 'Inventory ID not found')
     
-    def delete_inventory(inventory_id):
+    def delete_inventory(self, inventory_id):
         InventoryModelObj = InventoryModel()
         functionsObj = functions()
         res = InventoryModelObj.delete_inventory(inventory_id)

@@ -1,37 +1,20 @@
-import random
-import string
-from library.db import execute_query
+from library.db import execute_query, insert
 
 class ChemistModel:
-    def generate_access_token():
-        return ''.join(random.choices(string.ascii_letters + string.digits, k = 10))
     
-    def create_chemist(name, email, phone):
-        access_token = ChemistModel.generate_access_token()
-        query = """
-            INSERT INTO chemists (name, email, phone, access_token, created_at)
-            VALUES (:name, :email, :phone, :access_token, CURRENT_TIMESTAMP)
-            RETURNING chemist_id, name, email, access_token;
-        """
-        params = {
-            "name":name,
-            "email":email,
-            "phone":phone,
-            "access_token":access_token
+    def create_chemist(self, name, email, phone, password):
+        data = {
+            "name": name,
+            "email": email,
+            "phone": phone,
+            "password":password
         }
+        res = insert("chemists", data)
+        if res:
+            cols = ['name','email','phone','password']
+            return dict(zip(cols, (res['name'],res['email'],res['phone'],res['password'])))
 
-        result = execute_query(query, params, fetch_one = True)
-        if result:
-            columns = ['chemist_id','name','email']
-            return dict(zip(columns, result))
-        return None
-    
-    def get_chemist_by_id(chemist_id):
-        query = "SELECT * FROM chemists WHERE chemist_id = :chemist_id;"
-        params = {'chemist_id':chemist_id}
+    def get_chemist_by_email(self, email):
+        query = "SELECT * FROM chemists WHERE email = %s;"
+        params = (email,)
         return execute_query(query, params, fetch_one = True)
-    
-    def authenticate_chemist(chemist_id, access_token):
-        query = "SELECT * FROM chemists WHERE chemist_id = :chemist_id AND access_token = :access_token;"
-        params = {'chemist_id':chemist_id, 'access_token': access_token}
-        return execute_query(query, params, fetch_one = True) is not None
