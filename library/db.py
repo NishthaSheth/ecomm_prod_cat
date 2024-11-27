@@ -6,9 +6,9 @@ import os
 
 class DBUtil:
     def __init__(self):
-        self.__connection = None
-        self.db_config = {
-            "dbname":os.getenv("DBNAME"),
+         DBUtil.__connection = None
+         DBUtil.db_config = {
+            "dbname":"prod_cat",
             "user":os.getenv("DB_USER"),
             "password":os.getenv("DB_PASSWORD"),
             "host":os.getenv("DB_HOST"),
@@ -17,17 +17,24 @@ class DBUtil:
 
     def connect(self):
         try:
-            if self.__connection is None or self.__connection.closed != 0:
-                self.__connection = psycopg2.connect(**self.db_config)
-            return self.__connection
+            if  self.__connection is None or  self.__connection.closed != 0:
+                self.__connection = psycopg2.connect(** self.db_config)
+
+            cursor = self.__connection.cursor()
+            print(self.db_config['dbname'])
+            cursor.execute("SELECT current_database();")
+            db_name = cursor.fetchone()[0]
+            print(f"Connected to database: {db_name}")
+            cursor.close()
+            return  self.__connection
         except psycopg2.Error as e:
             print(e)
             raise
 
     def close_connection(self):
-        if self.__connection is not None and self.__connection.closed == 0:
-            self.__connection.close()
-            self.__connection = None
+        if  DBUtil.__connection is not None and  DBUtil.__connection.closed == 0:
+             DBUtil.__connection.close()
+             DBUtil.__connection = None
 def execute_query(query, params = None, fetch_one = False, fetch_all = False):
     db = DBUtil()
     connection = db.connect()
@@ -61,5 +68,6 @@ def insert(table_name, data):
         VALUES ({', '.join(['%s'] * len(params))}, CURRENT_TIMESTAMP)
         RETURNING * 
     """
+    print(query)
 
     return execute_query(query, params, fetch_one = True)

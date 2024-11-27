@@ -8,20 +8,24 @@ product = Blueprint('product',__name__)
 @jwt_required
 def create_product():
     data = request.json
+    # ProductControllerObj = ProductController()
     return ProductController.create_product(data)
 
 @product.route('/<int:product_id>', methods = ['GET'], endpoint = 'get_product')
 @jwt_required
 def get_product(product_id):
+    # ProductControllerObj = ProductController()
     return ProductController.get_product_by_id(product_id)
 
 @product.route('/<int:product_id>', methods = ['PUT'], endpoint = 'update_product')
 @jwt_required
 def update_product(product_id):
     data = request.json
+    # ProductControllerObj = ProductController()
     return ProductController.update_product(product_id, data)
 
 @product.route('/<int:product_id>', methods = ['DELETE'], endpoint = 'del_product')
 @jwt_required
 def delete_product(product_id):
+    # ProductControllerObj = ProductController()
     return ProductController.delete_product(product_id)

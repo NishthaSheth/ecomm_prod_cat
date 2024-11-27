@@ -8,6 +8,7 @@ chemist = Blueprint('chemist',__name__)
 @chemist.route('/create',methods = ['POST'])
 def create_chemist():
     data = request.json
+    # ChemistControllerObj = ChemistController()
     return ChemistController.create_chemist(data)
 
 @chemist.route('/login',methods = ['POST'])
@@ -17,4 +18,5 @@ def login():
 @chemist.route('<string:email>', methods = ['GET'])
 @jwt_required
 def get_product(email):
+    # ChemistControllerObj = ChemistController()
     return ChemistController.get_chemist_by_email(email)

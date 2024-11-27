@@ -21,7 +21,7 @@ class CategoryModel:
             return dict(zip(cols, res))
         return None
     
-    def get_all_categories():
+    def get_all_categories(self):
         query = "SELECT * FROM categories"
         res = execute_query(query, fetch_all = True)
         if res:
