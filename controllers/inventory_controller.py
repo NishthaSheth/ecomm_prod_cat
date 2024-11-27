@@ -1,8 +1,10 @@
-from flask import jsonify
 from models.inventory import InventoryModel
+from library.functions import functions
 
 class InventoryController:
     def add_inventory(data):
+        InventoryModelObj = InventoryModel()
+        functionsObj = functions()
         product_id, quantity, batch_number, expiry_date = (
             data.get('product_id'),
             data.get('quantity'),
@@ -11,26 +13,32 @@ class InventoryController:
         )
 
         if not all([product_id, quantity, batch_number, expiry_date]):
-            return jsonify({'status_code':0,'status_message':'Missing required parameters'}),400
+            return functionsObj.send_response(0,'Missing required parameters')
         
-        inventory = InventoryModel.add_inventory(product_id, quantity, batch_number, expiry_date)
-        return jsonify({'status_code':1, 'status_message':'Inventory added successfully','data':inventory})
+        inventory = InventoryModelObj.add_inventory(product_id, quantity, batch_number, expiry_date)
+        return functionsObj.send_response(1, 'Inventory added successfully',inventory)
     
     def get_inventory_by_product(product_id):
-        inventory = InventoryModel.get_inventory_by_product(product_id)
-        return jsonify({'status_code':1,'status_message':'Inventory retrieved successfully','data':inventory})
+        InventoryModelObj = InventoryModel()
+        functionsObj = functions()
+        inventory = InventoryModelObj.get_inventory_by_product(product_id)
+        return functionsObj.send_response(1,'Inventory retrieved successfully',inventory)
     
     def update_inventory(inventory_id, data):
+        InventoryModelObj = InventoryModel()
+        functionsObj = functions()
         if not data:
-            return jsonify({'status_code':0,'status_message':'No data found'}),400
+            return functionsObj.send_response(0,'No data found')
         
-        res = InventoryModel.update_inventory(inventory_id, **data)
+        res = InventoryModelObj.update_inventory(inventory_id, **data)
         if res:
-            return jsonify({'status_code':1,'status_message':'Inventory updated successfully'})
-        return jsonify({'status_code':0, 'status_message':'Inventory ID not found'})
+            return functionsObj.send_response(1,'Inventory updated successfully')
+        return functionsObj.send_response(0, 'Inventory ID not found')
     
     def delete_inventory(inventory_id):
-        res = InventoryModel.delete_inventory(inventory_id)
+        InventoryModelObj = InventoryModel()
+        functionsObj = functions()
+        res = InventoryModelObj.delete_inventory(inventory_id)
         if res:
-            return jsonify({'status_code':1,'status_message':'Inventory deleted successfully'})
-        return jsonify({'status_code':0,'status_message':'Inventory ID not found'})
+            return functionsObj.send_response(1,'Inventory deleted successfully')
+        return functionsObj.send_response(0,'Inventory ID not found')
